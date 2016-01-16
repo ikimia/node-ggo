@@ -1,5 +1,7 @@
 # ggo
-Turn node-style asynchronous functions and promises to a synchronous code using es6 generators.
+Turn node-style asynchronous functions and promises to a synchronous code using ES6 generators.
+## Requirements
+ggo is an npm module intended to be run on a node.js version that supports ES6 generators.
 ## Installation
 ```bash
 npm install ggo
