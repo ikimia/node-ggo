@@ -1,6 +1,6 @@
 {
   "name": "ggo",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Writing asynchronous code in a synchronous fashion",
   "main": "index.js",
   "scripts": {
