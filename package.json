@@ -12,10 +12,11 @@
     "esnext",
     "promise",
     "thunk",
-    "ggo",
+    "flow",
     "control"
   ],
   "author": "ikimia",
+  "repository": "ikimia/node-ggo",
   "license": "MIT",
   "devDependencies": {
     "tape": "^4.4.0"
