@@ -17,6 +17,9 @@
   ],
   "author": "ikimia",
   "repository": "ikimia/node-ggo",
+  "engines": {
+    "node": ">=4.0.0"
+  },
   "license": "MIT",
   "devDependencies": {
     "tape": "^4.4.0"
