@@ -9,23 +9,37 @@ npm install ggo
 ```
 ## Example
 ```javascript
+const assert = require('assert');
 const ggo = require('ggo');
-const request = require('request');
 
-function* getJSON(url) {
-  const res = yield cb => request.get(url, cb);
-  return JSON.parse(res.body);
+function returnValue(v, callback) {
+  process.nextTick(() => callback(null, v));
+}
+
+function* generateValue(v) {
+  return yield cb => returnValue(v, cb);
 }
 
 ggo(function* () {
-  const status = yield* getJSON('https://status.github.com/api/status.json');
-  console.log(status);
+  const a = yield cb => returnValue(1, cb);
+  const b = yield Promise.resolve(2);
+  const c = yield 3;
+  const d = yield* generateValue(4);
+
+  const all = yield [
+    cb => returnValue(1, cb),
+    Promise.resolve(2),
+    3,
+    generateValue(4)
+  ];
+
+  assert.deepEqual([a, b, c, d], all);
 });
 ```
 ## Usage
 ### ggo(genOrFn[, callback])
 `genOrFn` must be an initialized generator or a generator function that does not expect any arguments. Any other type will produce a `TypeError`.  
-`callback`, if provided, must be a node-style callback, i.e. accepting an error and a result as an arguments.  
+`callback`, if provided, must be a node-style callback, i.e. accepting an error and a result as arguments.  
 The return value of the generator will be provided as the result argument and if an error is thrown, it will be provided as the error argument.  
 If `callback` is not provided, any error that the generator produces, will be thrown.
 
@@ -44,11 +58,38 @@ The array may contain any combination of:
 - Initialized generators
 - Simple values, which will be returned as-is
 
-When all given elements have finished processing, a new array that contains the results of the given elements in the same order will be returned.
+When all given elements have finished processing, a new array that contains the results of the given elements in the same order will be returned.  
+If any of the elements provides an error, the error will be thrown inside the generator.
 
 ### Generator Delegation Support
 Delegation is supported using the `yield*` expression.  
 To run in parallel, a generator can be passed as an element of the yielded array.
+
+### Error Handling
+Any error originating from yielded objects will be thrown inside the generator, and can be caught using `try...catch`.  
+For example, the following code prints ERROR to stderr:
+```javascript
+ggo(function* () {
+  try {
+    yield Promise.reject(new Error('ERROR'));
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+```
+If an error is thrown inside a generator (and not caught), it will be passed to the callback given as a second argument to `ggo` or thrown if a callback has not been given.  
+The following example also prints ERROR to stderr:
+```javascript
+ggo(function* () {
+  yield Promise.reject(new Error('ERROR'));
+}, (err, result) => { console.error(err.message); });
+```
+In the following example, the uncaught error will crash the process. Make sure you handle all errors!
+```javascript
+ggo(function* () {
+  yield Promise.reject(new Error('ERROR'));
+});
+```
 
 ## License
 Licensed under MIT.
