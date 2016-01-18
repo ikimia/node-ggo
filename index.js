@@ -78,7 +78,7 @@ function ggo(genOrFn, cb) {
     isGenerator(genOrFn) ? genOrFn :
       isGeneratorFunction(genOrFn) ? genOrFn() :
         new ErrorGenerator(),
-    isFunction(cb) ? cb : err => { if (err) throw err; });
+    isFunction(cb) ? cb : err => { if (err) process.nextTick(() => { throw err; }); });
 }
 
 module.exports = ggo;

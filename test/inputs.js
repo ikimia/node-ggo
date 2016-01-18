@@ -24,17 +24,23 @@ test('not passing a callback generator should not fail', function (t) {
   ggo(function* () { return yield t.pass(); });
 });
 
+function assertTypeError(t) {
+  return function (err) {
+    t.is(err.constructor, TypeError);
+    t.is(err.message, 'genOrFn must be a generator or a generator function');
+  };
+}
+
 const OPTIONS = [undefined, null, {}, 1, ''];
 test('passing a wrong type for generator and callback should trigger an error callback', function (t) {
   t.plan(OPTIONS.length * 2);
-  OPTIONS.forEach(o => ggo(o, err => {
-    t.is(err.constructor, TypeError);
-    t.is(err.message, 'genOrFn must be a generator or a generator function');
-  }));
+  const callback = assertTypeError(t);
+  OPTIONS.forEach(o => ggo(o, callback));
 });
 
 test('passing a wrong type for generator and no callback should throw an error', function (t) {
-  t.plan(OPTIONS.length);
-  OPTIONS.forEach(o => t.throws(() => ggo(o),
-      /genOrFn must be a generator or a generator function/));
+  t.plan(OPTIONS.length * 2);
+  process.on('uncaughtException', assertTypeError(t));
+  OPTIONS.forEach(ggo);
+  process.nextTick(() => process.removeAllListeners('uncaughtException'));
 });
