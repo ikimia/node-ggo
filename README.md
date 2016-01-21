@@ -1,4 +1,7 @@
 # ggo [![Build Status](https://travis-ci.org/ikimia/node-ggo.svg?branch=master)](https://travis-ci.org/ikimia/node-ggo)
+**This project has moved to [forter/few](https://github.com/forter/few)**  
+**Please install using `npm install few`**
+* * *
 Turn node-style asynchronous functions and promises to a synchronous code using ES6 generators.
 ## Requirements
 ggo is an npm module intended to be run on node.js 4.0.0 and higher.  
